@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 50%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #ddd;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Your Portfolio</h1>
+        <form id="portfolioForm" method="POST" action="/save">
+            <input type="text" name="name" placeholder="Your Name" required><br>
+            <textarea name="bio" placeholder="Short Bio" required></textarea><br>
+            <input type="text" name="skills" placeholder="Skills (comma-separated)" required><br>
+            <input type="text" name="project_names" placeholder="Project Names (comma-separated)" required><br>
+            <textarea name="project_descriptions" placeholder="Project Descriptions (comma-separated)" required></textarea><br>
+            <button type="submit">Save Portfolio</button>
+        </form>
+
+        <h2>Your Portfolio</h2>
+        <h3 id="name"></h3>
+        <p id="bio"></p>
+        <h3>Skills</h3>
+        <ul id="skills"></ul>
+        <h3>Projects</h3>
+        <ul id="projects"></ul>
+    </div>
+
+    <script>
+        function loadPortfolio() {
+            fetch('portfolio.json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('name').textContent = data.name || "No Name Provided";
+                    document.getElementById('bio').textContent = data.bio || "No Bio Available";
+
+                    const skillsList = document.getElementById('skills');
+                    skillsList.innerHTML = "";
+                    if (data.skills && data.skills.length > 0) {
+                        data.skills.forEach(skill => {
+                            let li = document.createElement('li');
+                            li.textContent = skill;
+                            skillsList.appendChild(li);
+                        });
+                    } else {
+                        skillsList.innerHTML = "<li>No skills listed</li>";
+                    }
+
+                    const projectsList = document.getElementById('projects');
+                    projectsList.innerHTML = "";
+                    if (data.projects && data.projects.length > 0) {
+                        data.projects.forEach(project => {
+                            let li = document.createElement('li');
+                            li.innerHTML = `<strong>${project.name}</strong>: ${project.description}`;
+                            projectsList.appendChild(li);
+                        });
+                    } else {
+                        projectsList.innerHTML = "<li>No projects listed</li>";
+                    }
+                })
+                .catch(error => console.error('Error loading portfolio:', error));
+        }
+
+        // Load portfolio data on page load
+        window.onload = loadPortfolio;
+    </script>
+</body>
+</html>
